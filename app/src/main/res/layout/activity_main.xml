@@ -28,5 +28,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/scoreText"
         android:text="0"/>
+    <Button
+        android:layout_marginTop="30dp"
+        android:id="@+id/login"
+        android:text="Login"
+        android:onClick="loginClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
