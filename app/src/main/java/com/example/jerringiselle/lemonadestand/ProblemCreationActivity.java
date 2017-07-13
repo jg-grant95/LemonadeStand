@@ -10,8 +10,10 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-public class ProblemCreation extends AppCompatActivity {
+public class ProblemCreationActivity extends AppCompatActivity {
 
     Spinner spinner;
     EditText question, answer;
@@ -43,7 +45,16 @@ public class ProblemCreation extends AppCompatActivity {
     public void addProblemClick(View v){
         if(!isQuestion(question.getText().toString())) return;
         if(!isAnswer(answer.getText().toString())) return;
-        if(!isDifficulity(spinner.getSelectedItem().toString())) return;
+        if(!isDifficulty(spinner.getSelectedItem().toString())) return;
+        Problem problem=new Problem();
+        problem.setQuestion(question.getText().toString());
+        problem.setAnswer(answer.getText().toString());
+        problem.setProblemDifficulty(typeDifficulty(spinner.getSelectedItem().toString()));
+        problem.setId(1);
+        FirebaseDatabase database=FirebaseDatabase.getInstance();
+        DatabaseReference myRef=database.getReference("problem");
+        //myRef.setValue(problem);
+        myRef.push().setValue(problem);
     }
 
     //Check to see if question is entered, prompt user if not
@@ -67,13 +78,26 @@ public class ProblemCreation extends AppCompatActivity {
     }
 
     //Check to see if a difficulty is entered, prompt user if not
-    private boolean isDifficulity(String x){
+    private boolean isDifficulty(String x){
         if(x.isEmpty()){
             Toast toast= Toast.makeText(getApplicationContext(), "Please enter in a difficulty", Toast.LENGTH_SHORT);
             toast.show();
             return false;
         }
         return true;
+    }
+
+    private ProblemDifficulty typeDifficulty(String x){
+        switch (x.toLowerCase()){
+            case "easy":
+                return ProblemDifficulty.easy;
+            case "medium":
+                return ProblemDifficulty.medium;
+            case "hard":
+                return ProblemDifficulty.hard;
+            default:
+                return ProblemDifficulty.easy;
+        }
     }
 
 }

@@ -25,7 +25,7 @@
             android:name=".LoginActivity"
             android:label="@string/title_activity_login" />
         <activity
-            android:name=".ProblemCreation"
+            android:name=".ProblemCreationActivity"
             android:label="@string/title_activity_problem_creation"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
