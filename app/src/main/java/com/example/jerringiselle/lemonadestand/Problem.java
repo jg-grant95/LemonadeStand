@@ -53,4 +53,8 @@ public class Problem{
     public void setProblemDifficulty(ProblemDifficulty problemDifficulty) {
         this.problemDifficulty = problemDifficulty;
     }
+
+    public String toString(){
+        return question+"\n"+answer+"\n"+problemDifficulty ;
+    }
 }
