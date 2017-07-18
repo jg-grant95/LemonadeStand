@@ -25,10 +25,14 @@ public class MainActivity extends AppCompatActivity {
     TextView questionText, score;
     Button submitBtn;
     EditText answer;
+    int index;
+    int easyPoints=5, mediumPoints=10, hardPoints=20;
 
     ArrayList<Problem> problems=new ArrayList<Problem>();
     private static final String TAG="myMessage";
 
+    FirebaseDatabase database=FirebaseDatabase.getInstance();
+    DatabaseReference myRef=database.getReference().child("problem");
 
 
     @Override
@@ -41,7 +45,17 @@ public class MainActivity extends AppCompatActivity {
         answer = (EditText) findViewById(R.id.answerText);
 
         getData();
-        populateFields();
+        Log.i(TAG, "got the data");
+        submitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(answerRight(answer.getText().toString())){
+                    updateScore();
+                    populateFields();
+                }
+            }
+        });
+
     }
 
 
@@ -56,21 +70,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public String problemToString(){
-        String x="";
-        for(int i=0; i<problems.size(); i++){
-            x+=(problems.get(i).toString()+"\n");
-        }
-        return x;
-    }
-
-    private void showData(DataSnapshot dataSnapshot){
-        for(DataSnapshot ds: dataSnapshot.getChildren()){
-            Problem problem=new Problem();
-
-        }
-    }
-
     private void populateFields(){
         Random rand=new Random();
         int value;
@@ -79,26 +78,57 @@ public class MainActivity extends AppCompatActivity {
         }else{
             return;
         }
-        int index=rand.nextInt(value);
+        index=rand.nextInt(value);
         questionText.setText(problems.get(index).getQuestion());
     }
 
     private void getData(){
-        FirebaseDatabase database=FirebaseDatabase.getInstance();
-        DatabaseReference myRef=database.getReference();
-        myRef.child("problem").addValueEventListener(new ValueEventListener() {
+
+        Log.i(TAG, "In getData() method");
+        myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.i(TAG, "in the onDataChange() method");
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
-                    Problem problem=dataSnapshot.getValue(Problem.class);
+                    Problem problem=ds.getValue(Problem.class);
                     problems.add(problem);
+                    Log.i(TAG, problem.toString());
                 }
+                populateFields();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.i(TAG, "there was an error with the database"+ databaseError.getMessage());
             }
         });
+    }
+
+    private boolean answerRight(String x){
+        int userAnswer=Integer.parseInt(x);
+        int correctAnswer=Integer.parseInt(problems.get(index).getAnswer());
+        if(userAnswer==correctAnswer){
+            return true;
+        }
+        return false;
+    }
+
+    private void updateScore(){
+        int currentScore=Integer.parseInt(score.getText().toString());
+        int pointsAdded;
+        switch (problems.get(index).getProblemDifficulty()){
+            case easy:
+                pointsAdded=easyPoints;
+                break;
+            case medium:
+                pointsAdded=mediumPoints;
+                break;
+            case hard:
+                pointsAdded=hardPoints;
+                break;
+            default:
+                pointsAdded=0;
+        }
+        score.setText(""+(currentScore+pointsAdded));
     }
 }
