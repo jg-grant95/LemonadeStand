@@ -1,20 +1,18 @@
 package com.example.jerringiselle.lemonadestand;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -22,7 +20,7 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView questionText, score;
+    TextView questionText, score, difficultyText;
     Button submitBtn;
     EditText answer;
     int index;
@@ -40,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         questionText = (TextView) findViewById(R.id.questionText);
+        difficultyText = (TextView) findViewById(R.id.showDifficulty);
         score = (TextView) findViewById(R.id.scoreText);
         submitBtn = (Button) findViewById(R.id.submitBtn);
         answer = (EditText) findViewById(R.id.answerText);
@@ -52,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 if(answerRight(answer.getText().toString())){
                     updateScore();
                     populateFields();
+                    answer.setText("");
                 }
             }
         });
@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         }
         index=rand.nextInt(value);
         questionText.setText(problems.get(index).getQuestion());
+        difficultyText.setText(problems.get(index).getProblemDifficulty().toString());
     }
 
     private void getData(){
