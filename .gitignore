@@ -8,3 +8,4 @@
 /captures
 .externalNativeBuild
 *.vscode
+/scripts/environment.py
